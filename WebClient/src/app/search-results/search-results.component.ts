@@ -1,0 +1,80 @@
+import { ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { Post } from '../post';
+import { HttpService } from '../http.service';
+import { PagerService } from '../pager.service';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
+import { SearchComponent } from '../search/search.component';
+import { SharedEmitterService } from '../shared-emitter.service';
+import { IPagedResponse } from '../ipaged-response.pagedresponse';
+
+@Component({
+    moduleId: module.id,
+  selector: 'app-search-results',
+  templateUrl: './search-results.component.html',
+  styleUrls: ['./search-results.component.css']
+})
+export class SearchResultsComponent implements OnInit {
+    criteria: string;
+    busy: boolean = true;
+
+    constructor(private http: HttpClient,
+        private httpService: HttpService,
+        private pagerService: PagerService,
+        private route: ActivatedRoute,
+        private sharedEmitterService: SharedEmitterService) {
+
+        this.sharedEmitterService.searchCriteriaChanged.subscribe(criteria => {
+            this.criteria = criteria;
+            this.setCriteria();
+        });
+    }
+
+    // pager object
+    pager: any = {};
+
+    // paged items
+    pagedItems: Observable<Post[]>;
+
+    pageNumber: number;
+
+    ngOnInit() {
+        this.criteria = this.route.snapshot.params['criteria'];
+        this.setCriteria();
+  }
+
+    clearPager() {
+        this.pager = {};
+    }
+
+  setCriteria() {
+      if (this.criteria != 'undefined' && this.criteria) {
+          this.clearPager();
+          this.setPage(1);
+      }
+  }
+
+
+  setPage(page: number) {
+      //let criteria = this.route.snapshot.params['criteria'];
+
+      if (page < 1 || page > this.pager.totalPages) {
+          return;
+      }
+
+      this.httpService.getSearchResults(page, this.criteria)
+          .subscribe(data => {
+              // get pager object from service
+              this.pager = this.pagerService.getPager(data.total, page);
+
+              // get current page of items
+              this.pagedItems = data.posts;
+              this.busy = false;
+          },
+          err => {
+              console.log("Error occurred while trying to retrieve the search results");
+          }
+      );
+  }
+}

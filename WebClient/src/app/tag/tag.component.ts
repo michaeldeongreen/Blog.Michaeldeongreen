@@ -1,0 +1,71 @@
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { Post } from '../post';
+import { HttpService } from '../http.service';
+import { PagerService } from '../pager.service';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
+import { IPagedResponse } from '../ipaged-response.pagedresponse';
+
+@Component({
+  selector: 'app-tag-results',
+  templateUrl: './tag.component.html',
+  styleUrls: ['./tag.component.css']
+})
+export class TagComponent implements OnInit {
+    tag: string;
+    busy: boolean = true;
+
+    constructor(private http: HttpClient,
+        private httpService: HttpService,
+        private pagerService: PagerService,
+        private route: ActivatedRoute) { }
+
+    // pager object
+    pager: any = {};
+
+    // paged items
+    pagedItems: Observable<Post[]>;
+
+    pageNumber: number;
+
+    ngOnInit() {
+        this.tag = this.route.snapshot.params['tag'];
+        this.setPage(1);
+    }
+
+    setTag() {
+        if (this.tag != 'undefined' && this.tag) {
+            this.clearPager();
+            this.setPage(1);
+        }
+    }
+
+    clearPager() {
+        this.pager = {};
+    }
+
+    setPage(page: number) {
+        //let criteria = this.route.snapshot.params['criteria'];
+
+        if (page < 1 || page > this.pager.totalPages) {
+            return;
+        }
+
+        this.httpService.getPostsByTag(this.tag, page)
+            .subscribe(data => {
+                // get pager object from service
+                this.pager = this.pagerService.getPager(data.total, page);
+
+                // get current page of items
+                this.pagedItems = data.posts;
+                this.busy = false;
+            },
+            err => {
+                console.log("Error while retrieving posts by tag");
+            }
+        );
+    }
+
+
+}

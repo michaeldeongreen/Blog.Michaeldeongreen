@@ -1,0 +1,31 @@
+<app-header></app-header>
+<div class="container">
+    <div class="row">
+        <!-- Blog Entries Column -->
+        <div class="col-md-8">
+            <router-outlet></router-outlet>
+        </div>
+        <!-- Blog Sidebar Widgets Column -->
+        <div class="col-md-4">
+            <!-- Blog Search Well -->
+            <div class="well">
+                <app-search></app-search>            
+            </div>
+            <!-- Blog Categories Well -->
+            <div class="well">
+                <app-categories></app-categories>
+            </div>
+            <!-- Side Widget Well -->
+            <div class="well">
+                <app-quote></app-quote>
+            </div>
+            <!-- Side Widget Well -->
+            <div class="well">
+                <app-archives></app-archives>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    <hr>
+    <app-footer></app-footer>
+</div>

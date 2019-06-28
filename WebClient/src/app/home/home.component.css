@@ -1,0 +1,7 @@
+.ng2-pagination a {
+    cursor: pointer;
+}
+
+.ng2-pagination .current span {
+    cursor: pointer;
+}
