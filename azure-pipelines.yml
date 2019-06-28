@@ -13,19 +13,19 @@ steps:
 
 # Build web api dotnet webapi application
 - script: dotnet build --configuration $(buildConfiguration)
-  workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.GrenitausConsulting.Core.Web.Api'
+  workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Web.Api'
   displayName: 'Build Web API'
   continueOnError: false
 
 # Run Unit Tests for web api application
 - script: dotnet test --configuration $(buildConfiguration)
-  workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.GrenitausConsulting.Core.Unit.Tests'
+  workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Unit.Tests'
   displayName: 'Run Web API Tests'
   continueOnError: false
 
 # Run Unit Tests for gc-cli console application
 - script: dotnet test --configuration $(buildConfiguration)
-  workingDirectory: '$(System.DefaultWorkingDirectory)\cli\Blog.GrenitausConsulting.CLI.Core.Unit.Tests'
+  workingDirectory: '$(System.DefaultWorkingDirectory)\cli\Blog.Michaeldeongreen.CLI.Core.Unit.Tests'
   displayName: 'Run gc-cli Tests'
   continueOnError: false
 
@@ -50,7 +50,7 @@ steps:
 
 # Publish web api dotnet webapi application (Note: dist will be inside the main webapi project folder)
 - script: dotnet publish -c $(buildConfiguration) -o dist
-  workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.GrenitausConsulting.Core.Web.Api'
+  workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Web.Api'
   displayName: 'Publish Web API'
   continueOnError: false
 
@@ -58,7 +58,7 @@ steps:
 - task: ArchiveFiles@2
   displayName: 'Zip WebApi Artifacts'
   inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)\WebApi\Blog.GrenitausConsulting.Core.Web.Api\dist'
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Web.Api\dist'
     includeRootFolder: false
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)\webapi.zip'  
