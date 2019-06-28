@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Blog.GrenitausConsulting.CLI.Core.Common\Blog.GrenitausConsulting.CLI.Core.Common.csproj" />
-    <ProjectReference Include="..\Blog.GrenitausConsulting.CLI.Core.Domain\Blog.GrenitausConsulting.CLI.Core.Domain.csproj" />
-    <ProjectReference Include="..\Blog.GrenitausConsulting.CLI.Core.Services\Blog.GrenitausConsulting.CLI.Core.Services.csproj" />
+    <ProjectReference Include="..\Blog.Michaeldeongreen.CLI.Core.Common\Blog.Michaeldeongreen.CLI.Core.Common.csproj" />
+    <ProjectReference Include="..\Blog.Michaeldeongreen.CLI.Core.Domain\Blog.Michaeldeongreen.CLI.Core.Domain.csproj" />
+    <ProjectReference Include="..\Blog.Michaeldeongreen.CLI.Core.Services\Blog.Michaeldeongreen.CLI.Core.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

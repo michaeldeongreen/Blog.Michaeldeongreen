@@ -1,6 +1,6 @@
-﻿using Blog.GrenitausConsulting.CLI.Core.Common;
-using Blog.GrenitausConsulting.CLI.Core.Services;
-using Blog.GrenitausConsulting.CLI.Core.Services.Interfaces;
+﻿using Blog.Michaeldeongreen.CLI.Core.Common;
+using Blog.Michaeldeongreen.CLI.Core.Services;
+using Blog.Michaeldeongreen.CLI.Core.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,8 +16,8 @@ namespace gc_cli
         private static ICommandLineArgumentValidationService _commandLineArgumentValidationService;
         static void Main(string[] args)
         {
-            /*args = new string[] {"-configdir", @"C:\\Git\\Blog.GrenitausConsulting\\WebApi\\Blog.GrenitausConsulting.Core.Web.Api\\AppData",
-                "-outputdir", @"C:\\Git\\Blog.GrenitausConsulting\\WebClient\\src", "-blogurl", "http://localhost:4200" };*/
+            /*args = new string[] {"-configdir", @"C:\\Git\\Blog.Michaeldeongreen\\WebApi\\Blog.Michaeldeongreen.Core.Web.Api\\AppData",
+                "-outputdir", @"C:\\Git\\Blog.Michaeldeongreen\\WebClient\\src", "-blogurl", "http://localhost:4200" };*/
             string path = Directory.GetCurrentDirectory();
 
             IConfigurationBuilder builder = new ConfigurationBuilder()
