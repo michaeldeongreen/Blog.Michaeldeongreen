@@ -3367,5 +3367,94 @@
     ],
     "canPreview": true,
     "previewExpirationDate": "2019-05-15"
-  }        
+  },
+  {
+    "id": 66,
+    "title": "How to SSH into an Azure Virtual Machine using Azure DevOps, Azure Key Vault and Bash",
+    "author": "Michael D. Green",
+    "postDate": "2019-07-03",
+    "snippet": "In this blog entry I want to demonstrate how to SSH into an Azure Virtual Machine using an Azure DevOps Hosted Agent, Azure Key Vault and Bash.",
+    "link": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash",
+    "isActive": true,
+    "categories": [
+      {
+        "id": 3,
+        "name": "Technology"
+      }
+    ],
+    "tags": [
+      {
+        "id": 90,
+        "name": "Azure DevOps"
+      },
+      {
+        "id": 100,
+        "name": "Azure Key Vault"
+      },   
+      {
+        "id": 33,
+        "name": "Bash"
+      },                     
+      {
+        "id": 98,
+        "name": "docker"
+      }      
+    ],
+    "images": [
+      {
+        "name": "microsoft-logo-1200x627.png",
+        "url": "assets/images/microsoft-logo-1200x627.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-001.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-001.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-002.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-002.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-003.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-003.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-004.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-004.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-005.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-005.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-006.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-006.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-007.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-007.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-008.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-008.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-009.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-009.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-010.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-010.png"
+      },
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-011.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-011.png"
+      },                                                            
+      {
+        "name": "how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-012.png",
+        "url": "assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-012.png"
+      }      
+    ],
+    "canPreview": true,
+    "previewExpirationDate": "2019-07-15"
+  }     
 ]  

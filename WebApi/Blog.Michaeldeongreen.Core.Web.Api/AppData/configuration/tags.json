@@ -129,7 +129,7 @@
   },
   {
     "id": 33,
-    "name": "Git Bash"
+    "name": "Bash"
   },
   {
     "id": 34,
@@ -394,5 +394,9 @@
   {
     "id": 99,
     "name": "Virtual Machine"
-  }          
+  },
+  {
+    "id": 100,
+    "name": "Azure Key Vault"
+  }              
 ]

@@ -1,0 +1,372 @@
+<a href="assets/images/michaeldeongreen-logo.png"><img class="img-responsive" src="assets/images/michaeldeongreen-logo.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+In this blog entry I want to demonstrate how to SSH into an Azure Virtual Machine using an Azure DevOps Hosted Agent, Azure Key Vault and Bash.
+
+<br><br>
+
+<strong>Prerequisites!</strong>
+
+<br><br>
+
+<ul>
+	<li>azure-cli</li>
+	<li>Azure DevOps</li>
+	<li>Azure Subscription</li>	
+	<li>Bash</li>
+	<li>GitHub Account</li>
+	<li>Ubuntu</li>
+</ul>
+
+<br><br>
+
+<strong>Caveats!</strong>
+
+<br><br>
+
+This blog entry is not an exhaustive tutorial on Azure, Azure Virtual Machines, Azure DevOps, Azure Key Vault, Bash, Docker, Public Key Encryption or the SSH Protocol.  This blog assumes the reader has a fundamental knowledge of the aformentioned technologies and concepts.
+
+<br><br>
+
+Also, in this blog entry I open up a number of ports on an Azure Virtual Machine.  <b>For brevity and to keep this guide as simple as possible, the "best" security practices are not used when opening these ports and should not serve as an example for a live environment.</b>
+
+<br><br>
+
+I will be using <a href="https://github.com/michaeldeongreen/azdo-hosted-agent-ssh-dynamic-environment-keyvault" target="_blank">this</a> repository, which contains 2 Bash scripts that will install a Private Key on an Azure DevOps Hosted Agent and deploy the <a href="https://hub.docker.com/_/microsoft-dotnet-core-samples" target="_blank">ASP.Net Core Sample Docker container</a> to an Azure Virtual Machine.  You will need to clone the GitHub repository.
+
+<br><br>
+
+Please view the <a href="https://github.com/michaeldeongreen/azdo-hosted-agent-ssh-dynamic-environment-keyvault/blob/master/README.md">README</a> for a detailed description of how the Bash scripts work.
+
+<br><br>
+
+<strong>Background!</strong>
+
+<br><br>
+
+On my latest project here at Microsoft, we are using <a href="https://www.terraform.io/intro/" target="_blank">Terraform</a> to deploy our infrastructure to the Azure Cloud.  One of the resources that is deployed are Virtual Machines that run docker containers and the information about these Virtual Machines <i>(username, ip address etc etc)</i> is stored in an Azure Key Vault via Terraform.  To automate the container deployment process, we needed to create a Azure DevOps Pipeline that would:
+
+<br><br>
+
+ <ol>
+	<li>Retrieve the username & IP Address of the Virtual Machine from Azure Key Vault</li>
+	<li>Retrieve an SSH Private Key that has been Base64 encoded from Azure Key Vault</li>
+	<li>Install the SSH Private Key on the Azure DevOps Hosted Build Agent</li>
+	<li>SSH into the Azure Virtual Machine and deploy a new version of a Docker container</li>
+ </ol>
+
+<br><br>
+
+Azure DevOps has a built in SSH Task to SSH into a Virtual Machine but unfortunately, the Service Connection this task uses requires you to hard-code the IP Address and Port into the Service Connection which would not work for us because we needed to have these values (along with other values) in an Azure Key Vault, which could be accessed programmically in order to support automating Docker container deployments to an Azure Virtual Machine.
+
+<br><br>
+
+<strong>Create and Configure Azure Resources!</strong>
+
+<br><br>
+
+Log into Azure:
+
+<br><br>
+
+<pre><code class="language-bash">
+az login
+</code></pre>
+
+<br><br>
+
+Create an Azure Resource Group:
+
+<br><br>
+
+<pre><code class="language-bash">
+az group create -l eastus -n {name_resouce_group}
+</code></pre>
+
+<br><br>
+
+Create an Azure Key Vault:
+
+<br><br>
+
+<pre><code class="language-bash">
+az keyvault create -n {name_of_keyvault} -g {name_of_group} -l eastus --sku standard
+</code></pre>
+
+<br><br>
+
+Now we need to create a Azure Key Vault secret that will contain a Private Key.  For brevity, I am using the Private Key stored on my Hyper-V Ubuntu 18.04 development machine.  If you are unfamiliar with generating SSH Key Pairs on Ubuntu, please see the tutorial on <a href="https://www.ssh.com/ssh/keygen/" target="_blank">ssh-keygen</a>.
+
+<br><br>
+
+<pre><code class="language-bash">
+# copy private key into a variable, Base64 encode the variable and save it into the azure key vault as a secret
+# we Base64 encode the private key to preserve the characters
+privatekey=$(base64 ~/.ssh/id_rsa) && az keyvault secret set -n {name_of_secret} --vault-name {name_of_key_vault} --value "$privatekey"
+</code></pre>
+
+<br><br>
+
+To test that the Private Key was saved, you can run the following command:
+
+<br><br>
+
+<pre><code class="language-bash">
+echo $(az keyvault secret show -n {name_of_secret} --vault-name {name_of_key_vault} --query 'value' --output tsv) | base64 -di
+</code></pre>
+
+<br><br>
+
+We now need to create an Azure Virtual Machine, so we can store the username & IP Address in Azure Key Vault:
+
+<br><br>
+
+Since we will be using SSH, I need to copy "Public" key located on my Hyper-V development machine, which will be copied to the Azure Virtual Machine's <a href="https://www.ssh.com/ssh/authorized_keys/" target="_blank">authorized_keys</a> directory:
+
+<pre><code class="language-bash">
+cat ~/.ssh/id_rsa.pub
+</code></pre>
+
+<br><br>
+
+In the <a href="https://portal.azure.com" target="_blank">Azure Portal</a>:
+
+<br><br>
+
+<ol>
+	<li>Choose Virtual Machine and Add a Virtual Machine</li>
+	<li>Choose Ubuntu 18.04 LTS as the OS</li>
+	<li>Choose a name</li>
+	<li>Choose a Resource Group</li>
+	<li>Copy the "Public" key into SSH Public Key text area</li>
+	<li>Change the size of the Virtual Machine to a "Standard B1ms"</li>
+	<li>Choose to open port 22 (SSH)</li>
+	<li>Choose a Standard HDD</li>
+</ol>
+
+<br><br>
+
+Once you have done this, review and create the Virtual Machine.  We will need to open a few other ports:
+
+<br><br>
+
+<ol>
+	<li>Choose  Networking</li>
+	<li>Choose "Add inbound port rule"</li>
+	<li>Add an entry for Ports 2376 <i>(docker daemon encrypted communication port)</i> and 8000 <i>(port used by the ASP.Net Core Sample App)</i></li>
+</ol>
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-001.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-001.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+As noted, only do this for <i>learning</i> purposes and always follow proper security protocols for live environments.
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-002.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-002.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+We need to now SSH into the Azure Virtual Machine and install docker.  You can find the IP Address of the Virtual Machine in the Overview blade:
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-003.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-003.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+SSH into the Virtual Machine and install Docker:
+
+<br><br>
+
+<pre><code class="language-bash">
+ssh {username_of_virtual_machine}@{ip_address_of_virtual_machine}
+</code></pre>
+
+<br><br>
+
+Use the <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/" target="_blank">official</a> Docker guide to install Docker on Ubuntu.
+
+<br><br>
+
+We will also want to place the Virtual Machine user in the <a href="https://docs.docker.com/install/linux/linux-postinstall/" target="_blank">docker</a> group:
+
+<br><br>
+
+<pre><code class="language-bash">
+sudo groupadd docker && sudo usermod -aG docker $USER
+</code></pre>
+
+<br><br>
+
+We will need to reboot for the changes to take effect:
+
+<br><br>
+
+<pre><code class="language-bash">
+sudo reboot
+</code></pre>
+
+<br><br>
+
+We need to store the Virtual Machine username and IP Address in Azure Key Vault as secrets:
+
+<br><br>
+
+<pre><code class="language-bash">
+az keyvault secret set -n vm-ip-address --vault-name {name_of_key_vault} --value {ip_address}
+</code></pre>
+
+<br><br>
+
+<pre><code class="language-bash">
+az keyvault secret set -n vm-ip-address --vault-name {name_of_key_vault} --value {virtual_machine_username}
+</code></pre>
+
+<br><br>
+
+Here are the secret names I used:
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-006.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-006.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+<strong>Create a Azure DevOps Release Pipeline!</strong>
+
+<br><br>
+
+We now need to let Azure DevOps create a Service Principal, which will be used to execute our Bash scripts.
+
+<br><br>
+
+In Azure DevOps:
+
+<ol>
+	<li>Create a new Project</li>
+	<li>Inside the Project, choose Project Settings</li>
+	<li>Choose Service Connection</li>
+	<li>Choose Azure Resource Manager</li>
+</ol>
+
+<br><br>
+
+Fill in the appropriate information.  The end result should be something similar to the picture below:
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-004.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-004.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+After the Service Principal has been created, select the Service Principal and choose "Manage Service Principal".  You will be taken to the Azure Portal where you can copy the display name of the new Service Principal Azure DevOps created.
+
+<br><br>
+
+We need to grant the new Service Principal the correct permissions to be able to retrieve values from the Azure Key Vault.  In the Azure Portal:
+
+<br><br>
+
+<ol>
+	<li>Choose the Azure Key Vault that was created</li>
+	<li>Choose the "Access policies" blade</li>
+	<li>Choose "Add new"</li>
+	<li>Paste the Service Principal name in the search bar to find the Service Principal</li>
+	<li>Grant Get and List permissions, similar to the image below</li>
+</ol>
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-005.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-005.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+Now let's create the Release Pipeline that will execute the Bash scripts.
+
+<br><br>
+
+In Azure DevOps:
+
+<ol>
+	<li>Choose Pipelines</li>
+	<li>Choose Releases</li>
+	<li>Create a New Release Pipeline</li>
+	<li>Select the GitHub Repository you cloned as the Artifacts</li>
+</ol>
+
+<br><br>
+
+We need to create the variables that the "aspnetcoreapp-deploy.sh" uses:
+
+<br><br>
+
+Under the "Variables" tab, create the following variables:
+
+<br><br>
+
+<ul>
+	<li><b>docker-image:</b> mcr.microsoft.com/dotnet/core/samples:aspnetapp</li>
+	<li><b>key-install-script-directory:</b> $(System.DefaultWorkingDirectory)/{azuredevops_artifacts_directory_name}</li>
+	<li><b>keyvault-name:</b> {key_vault_name}</li>
+</ul>
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-007.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-007.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+We now need to create a few tasks.  Under the "Tasks" tab, choose "Agent job" and make sure "Hosted Ubuntu 1604" is selected.
+
+<br><br>
+
+Next, create a Azure Key Vault task (this task will create variables with the same exact name as the secret name in the Azure Key Vault):
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-008.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-008.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+Next, we will create an Azure CLI task that will execute the Bash scripts:
+
+<br><br>
+
+<ol>
+	<li>Choose the Service Connection we created and configured earlier</li>
+	<li>Choose Script path and choose the aspnetcoreapp-deploy.sh Bash script</li>
+	<li>Set the arguments: <i>-a $(docker-image) -v $(vm-username) -i $(vm-ip-address) -k $(keyvault-name) -d $(key-install-script-directory)</i></li>
+</ol>
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-009.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-009.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+<strong>Run Azure DevOps Release Pipeline & Test ASP.Net Core Sample Application!</strong>
+
+<br><br>
+
+Now that we have created the Release Pipeline, we can hit the "Create release" button at the top right to create a release.
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-010.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-010.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-011.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-011.png" alt="Blog.Michaeldeongreen.com"></a>
+
+<br><br>
+
+Testing the ASP.Net Core Application by navigationg to "http://{virtual_machine_ip_address}:8000"
+
+<br><br>
+
+<a href="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-012.png"><img class="img-responsive" src="assets/images/how-to-ssh-into-an-azure-virtual-machine-using-azure-devops-azure-keyvault-and-bash-012.png" alt="Blog.Michaeldeongreen.com"></a>
