@@ -3456,5 +3456,38 @@
     ],
     "canPreview": true,
     "previewExpirationDate": "2019-07-15"
-  }     
+  },
+  {
+    "id": 67,
+    "title": "Independent Consultant Versus Working for a Big Company!",
+    "author": "Michael D. Green",
+    "postDate": "2019-09-07",
+    "snippet": "Michael D. Green talks about the pros and cons of working as an independent consultant or for a big company.",
+    "link": "independent-consultant-versus-working-for-a-big-company",
+    "isActive": true,
+    "categories": [
+      {
+        "id": 1,
+        "name": "Career Advice"
+      }
+    ],
+    "tags": [
+      {
+        "id": 1,
+        "name": "Consulting"
+      },
+      {
+        "id": 2,
+        "name": "IT"
+      }
+    ],
+    "images": [
+      {
+        "name": "michaeldeongreen-logo-1200x627.jpg",
+        "url": "assets/images/michaeldeongreen-logo-1200x627.jpg"
+      }
+    ],
+    "canPreview": false,
+    "previewExpirationDate": null
+  }  
 ]  
