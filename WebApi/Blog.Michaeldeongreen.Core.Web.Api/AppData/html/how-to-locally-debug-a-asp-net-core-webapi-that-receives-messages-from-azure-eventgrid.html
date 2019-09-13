@@ -1,0 +1,187 @@
+<a href="assets/images/michaeldeongreen-logo.png"><img class="img-responsive" src="assets/images/michaeldeongreen-logo.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+At one our Client Partners here at Microsoft, we are using the <a href="https://azure.microsoft.com/en-us/services/event-grid/" target="_blank">Azure EventGrid</a> to power our event driven application written in ASP.Net Core.  In this blog, I wanted to take a moment to demonstrate how to locally debug a ASP.Net Core Web API that receives messages from Azure EventGrid.
+
+<br><br>
+
+In this tutorial, I will demonstrate debug a ASP.Net Core Web API endpoint that receives messages when a new blob is created in an Azure Blob Storage Account.  The code used in this tutorial can be found <a href="https://github.com/michaeldeongreen/azeventgrid-local-debug-aspnet-core-ngrok/blob/master/README.md" target="_blank">here</a>
+
+<br><br>
+
+<strong>Pre-requisites!</strong>
+
+<br><br>
+
+<ul>
+    <li><a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest" target="_blank">azure-cli</a></li>    
+    <li>Azure Subscription</li>
+    <li>Git</li>
+    <li><a href="https://code.visualstudio.com/" target="_blank">Visual Studio Code</a></li>    
+</ul>
+
+<br><br>
+
+<b>Note:</b> Before running any of the commands, always ensure you have logged into azure by executing the following command:
+
+<br><br>
+
+<pre><code class="language-bash">
+    az login
+</code></pre>
+
+<br><br>
+
+<strong>ngrok</strong>
+
+<br><br>
+
+First, we need to donwload a tool called <a href="https://ngrok.com/" target="_blank">ngrok</a>.  Once you create an account, following the instructions on how to register your authtoken.
+
+<br><br>
+
+<strong>Register the Azure EventGrid Provider</strong>
+
+<br><br>
+
+If not already registered, we will need to <a href="https://docs.microsoft.com/en-us/azure/event-grid/custom-event-quickstart" target="_blank">register</a> the Azure EventGrid.  Open up a terminal and run the following command.
+
+<br><br>
+
+<pre><code class="language-bash">
+    az login &&
+    az provider show --namespace Microsoft.EventGrid --query "registrationState"
+</code></pre>
+
+
+<strong>Create Azure Blog Storage Account</strong>
+
+<br><br>
+
+We will clone the <a href="https://github.com/michaeldeongreen/azeventgrid-local-debug-aspnet-core-ngrok/blob/master/README.md" target="_blank">sample application</a> and navigate to the <i>scripts</i> folder and execute the following command to create our Azure Blog Storage Account and a container called <i>demo</i>:
+
+<br><br>
+ chmod +x create-az-storage-account.sh &&
+./create-az-storage-account.sh -r {name_of_resource_group} -l {location} -a {name_of_blob_storage_account}
+
+<br><br>
+
+If the script was successfully, it will return back the message <i>The script has created the Azure Resources</i>.
+
+<br><br>
+
+<strong>Debugging!</strong>
+
+<br><br>
+
+Open up the ASP.Net Core WebAPI project and press <i>F5</i> to run the project.  A quick note, for Ubuntu, I had to modify the <i>launchSettings.json</i> file to use <i>http</i> to allow ngrok to work.
+
+<br><br>
+
+In the <i>EventGridController</i>, place breakpoints in various places to debug the application when a message is received from Azure EventGrid.
+
+<br><br>
+
+Next, we need to run ngrok.  We do this by executing the command  below: <i>(note: for Windows user, you need to use the command prompt as I could not get git bash to work)</i>.
+
+<br><br>
+
+<pre><code class="language-bash">
+    ngrok http -host-header=localhost 5000
+</code></pre>
+
+<br><br>
+
+Next, we will need to copy the generated url so we can use it to subscribe to events via Azure EventGrid. 
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-001.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-001.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+Next, we need to navigate to the <a href="https://https://portal.azure.com" target="_blank">Azure Portal</a> to create the Subscription and upload a file, so we can debug the application.
+
+<br><br>
+
+In the Azure Portal, we need to find the Azure Blob Storage Account we created when we ran the <i>create-az-storage-account.sh</i> bash script.  Select "Events" and then "Event Subscriptions". 
+
+<br><br>
+
+For the <i>Endpoint Type</i>, we will choose "webhook" and copy the url ngork generated and add "/eventgrid" to the end ie <i>https://ngrok-url/eventgrid</i>. See the images below for guidance:
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-002.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-002.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-003.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-003.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-004.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-004.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+When we hit the <i>create</i> button to create the Subscription, for security reasons, Azure will valid the endpoint and if you have a breakpoint similar to the picture below, Visual Studio Code should hit a breakpoint:
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-005.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-005.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+Also, the new Subscription should be displayed on the Events page in the Azure Blob Storage Account:
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-006.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-006.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+Now let's upload a file and debug the <i>HandleEventGridEventAsync</i> Method inside of the EventGridController <i>(make sure you have a breakpoint in the HandleEventGridEventAsync method)</i>.
+
+<br><br>
+
+In the Azure Portal, we need to find the Azure Blog Storage Account and navigate to the <i>demo</i> container.  Inside of the container, we will press the "upload" button.  Included in the sample application is a file called "sample.json", you can choose this file or a file of your own choosing.  For guidance, see the pictures below:
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-007.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-007.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-008.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-008.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-009.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-009.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+Once the file is finished uploading, our breakpoint should be activated in Visual Studio Code:
+
+<br><br>
+
+<a href="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-010.png"><img class="img-responsive" src="assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-010.png" alt="Michael D. Green"></a>
+
+<br><br>
+
+<strong>Clean Up!</strong>
+
+<br><br>
+
+Now that were are finished, we can run the <i>delete-az-storage-account.sh</i> to clean up our resources.  Run the following command:
+
+<br><br>
+
+<pre><code class="language-bash">
+    chmod +x delete-az-storage-account.sh &&
+    ./delete-az-storage-account.sh -r {name_of_resource_group}
+</code></pre>
+
+<br><br>
+
+If the script was successfully, it will return back the message <i>The script has deleted the Azure Resources</i>.
