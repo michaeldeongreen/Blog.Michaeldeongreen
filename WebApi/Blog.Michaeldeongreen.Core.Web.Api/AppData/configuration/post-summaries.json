@@ -3492,7 +3492,7 @@
   },
   {
     "id": 68,
-    "title": "How to Locally Debug a ASP.Net Core WebAPI that Receives Messages from Azure EventGrid",
+    "title": "How to Locally Debug a ASP.Net Core Web API that Receives Messages from Azure EventGrid",
     "author": "Michael D. Green",
     "postDate": "2019-09-13",
     "snippet": "Michael D. Green demonstrates how to locally debug a ASP.Net Core Web API that receives messages from Azure EventGrid",

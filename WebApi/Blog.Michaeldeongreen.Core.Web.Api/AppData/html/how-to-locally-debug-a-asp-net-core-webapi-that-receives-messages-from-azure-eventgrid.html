@@ -6,7 +6,7 @@ At one our Client Partners here at Microsoft, we are using the <a href="https://
 
 <br><br>
 
-In this tutorial, I will demonstrate debug a ASP.Net Core Web API endpoint that receives messages when a new blob is created in an Azure Blob Storage Account.  The code used in this tutorial can be found <a href="https://github.com/michaeldeongreen/azeventgrid-local-debug-aspnet-core-ngrok" target="_blank">here</a>
+In this tutorial, I will demonstrate how to debug a ASP.Net Core Web API endpoint that receives messages when a new blob is created in an Azure Blob Storage Account.  The code used in this tutorial can be found <a href="https://github.com/michaeldeongreen/azeventgrid-local-debug-aspnet-core-ngrok" target="_blank">here</a>
 
 <br><br>
 
@@ -15,8 +15,9 @@ In this tutorial, I will demonstrate debug a ASP.Net Core Web API endpoint that 
 <br><br>
 
 <ul>
+    <li><a href="https://dotnet.microsoft.com/download/dotnet-core/2.2" target="_blank">.Net Core 2.2</a></li>    
+    <li>An Azure Subscription</li>
     <li><a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest" target="_blank">azure-cli</a></li>    
-    <li>Azure Subscription</li>
     <li>Git</li>
     <li><a href="https://code.visualstudio.com/" target="_blank">Visual Studio Code</a></li>    
 </ul>
@@ -45,29 +46,32 @@ First, we need to donwload a tool called <a href="https://ngrok.com/" target="_b
 
 <br><br>
 
-If not already registered, we will need to <a href="https://docs.microsoft.com/en-us/azure/event-grid/custom-event-quickstart" target="_blank">register</a> the Azure EventGrid.  Open up a terminal and run the following command.
+If not already registered, we will need to <a href="https://docs.microsoft.com/en-us/azure/event-grid/custom-event-quickstart#enable-event-grid-resource-provider" target="_blank">register</a> the Azure EventGrid.  Open up a terminal and run the following command.
 
 <br><br>
 
 <pre><code class="language-bash">
-    az login &&
     az provider show --namespace Microsoft.EventGrid --query "registrationState"
 </code></pre>
 
+<br><br>
 
 <strong>Create Azure Blog Storage Account</strong>
 
 <br><br>
 
-We will clone the <a href="https://github.com/michaeldeongreen/azeventgrid-local-debug-aspnet-core-ngrok" target="_blank">sample application</a> and navigate to the <i>scripts</i> folder and execute the following command to create our Azure Blog Storage Account and a container called <i>demo</i>:
-
-<br><br>
- chmod +x create-az-storage-account.sh &&
-./create-az-storage-account.sh -r {name_of_resource_group} -l {location} -a {name_of_blob_storage_account}
+We will clone the <a href="https://github.com/michaeldeongreen/azeventgrid-local-debug-aspnet-core-ngrok" target="_blank">sample application</a> and navigate to the <i>scripts</i> folder and execute the following command to create our Azure Blog Storage Account and a Blob container called <i>demo</i>:
 
 <br><br>
 
-If the script was successfully, it will return back the message <i>The script has created the Azure Resources</i>.
+<pre><code class="language-bash">
+    chmod +x create-az-storage-account.sh &&
+    ./create-az-storage-account.sh -r {name_of_resource_group} -l {location} -a {name_of_blob_storage_account}
+</code></pre>
+
+<br><br>
+
+If the script ran successfully, it will return back the message <i>The script has created the Azure Resources</i>.
 
 <br><br>
 
@@ -75,7 +79,7 @@ If the script was successfully, it will return back the message <i>The script ha
 
 <br><br>
 
-Open up the ASP.Net Core WebAPI project and press <i>F5</i> to run the project.  A quick note, for Ubuntu, I had to modify the <i>launchSettings.json</i> file to use <i>http</i> to allow ngrok to work.
+Open up the ASP.Net Core Web API project in Visual Studio Code and press <i>F5</i> to run the project.  A quick note, for Ubuntu, I had to modify the <i>launchSettings.json</i> file to use <i>http</i> to allow ngrok to work.
 
 <br><br>
 
@@ -105,7 +109,7 @@ Next, we need to navigate to the <a href="https://https://portal.azure.com" targ
 
 <br><br>
 
-In the Azure Portal, we need to find the Azure Blob Storage Account we created when we ran the <i>create-az-storage-account.sh</i> bash script.  Select "Events" and then "Event Subscriptions". 
+In the Azure Portal, we need to find the Azure Blob Storage Account we created when we ran the <i>create-az-storage-account.sh</i> bash script.  Select "Events" and then "Event Subscription". 
 
 <br><br>
 
@@ -125,7 +129,7 @@ For the <i>Endpoint Type</i>, we will choose "webhook" and copy the url ngork ge
 
 <br><br>
 
-When we hit the <i>create</i> button to create the Subscription, for security reasons, Azure will valid the endpoint and if you have a breakpoint similar to the picture below, Visual Studio Code should hit a breakpoint:
+When we hit the <i>create</i> button to create the Subscription, for security reasons, Azure EventGrid will validate the endpoint and if you have a breakpoint similar to the picture below, the breakpoint should be activated in Visual Studio Code:
 
 <br><br>
 
@@ -145,7 +149,7 @@ Now let's upload a file and debug the <i>HandleEventGridEventAsync</i> Method in
 
 <br><br>
 
-In the Azure Portal, we need to find the Azure Blog Storage Account and navigate to the <i>demo</i> container.  Inside of the container, we will press the "upload" button.  Included in the sample application is a file called "sample.json", you can choose this file or a file of your own choosing.  For guidance, see the pictures below:
+In the Azure Portal, we need to find the Azure Blog Storage Account and navigate to the <i>demo</i> container.  Inside of the container, we will press the <i>upload</i> button.  Included in the Git repository root directory is a file called <i>sample.json</i>, you can choose this file or a file of your own choosing.  For guidance, see the pictures below:
 
 <br><br>
 
@@ -173,7 +177,7 @@ Once the file is finished uploading, our breakpoint should be activated in Visua
 
 <br><br>
 
-Now that were are finished, we can run the <i>delete-az-storage-account.sh</i> script to clean up our resources.  Run the following command:
+Now that we are finished, we can run the <i>delete-az-storage-account.sh</i> bash script to clean up our resources.  Run the following command:
 
 <br><br>
 
@@ -184,4 +188,4 @@ Now that were are finished, we can run the <i>delete-az-storage-account.sh</i> s
 
 <br><br>
 
-If the script was successfully, it will return back the message <i>The script has deleted the Azure Resources</i>.
+If the script ran successfully, it will return back the message <i>The script has deleted the Azure Resources</i>.
