@@ -3489,5 +3489,82 @@
     ],
     "canPreview": false,
     "previewExpirationDate": null
-  }  
+  },
+  {
+    "id": 68,
+    "title": "How to Locally Debug a ASP.Net Core Web API that Receives Messages from Azure EventGrid",
+    "author": "Michael D. Green",
+    "postDate": "2019-09-13",
+    "snippet": "Michael D. Green demonstrates how to locally debug a ASP.Net Core Web API that receives messages from Azure EventGrid",
+    "link": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid",
+    "isActive": true,
+    "categories": [
+      {
+        "id": 3,
+        "name": "Technology"
+      }
+    ],
+    "tags": [
+      {
+        "id": 86,
+        "name": ".Net Core"
+      },
+      {
+        "id": 41,
+        "name": "ASP.Net Web API"
+      },
+      {
+        "id": 101,
+        "name": "Azure EventGrid"
+      }      
+    ],
+    "images": [
+      {
+        "name": "michaeldeongreen-logo-1200x627.jpg",
+        "url": "assets/images/michaeldeongreen-logo-1200x627.jpg"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-001.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-001.png"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-002.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-002.png"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-003.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-003.png"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-004.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-004.png"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-005.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-005.png"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-006.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-006.png"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-007.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-007.png"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-008.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-008.png"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-009.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-009.png"
+      },
+      {
+        "name": "how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-010.png",
+        "url": "assets/images/how-to-locally-debug-a-asp-net-core-webapi-that-receives-messages-from-azure-eventgrid-010.png"
+      }
+    ],
+    "canPreview": false,
+    "previewExpirationDate": null
+  }    
 ]  

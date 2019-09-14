@@ -222,5 +222,12 @@
     "quote": "A person who never made a mistake never tried anything new.",
     "url": "https://en.wikipedia.org/wiki/Albert_Einstein",
     "addedDate": "2019-09-07"
-  }
+  },
+  {
+    "id": 33,
+    "author": "Gary Vaynerchuk",
+    "quote": "Without hustle, talent will only carry you so far.",
+    "url": "https://en.wikipedia.org/wiki/Gary_Vaynerchuk",
+    "addedDate": "2019-09-13"
+  }  
 ]
