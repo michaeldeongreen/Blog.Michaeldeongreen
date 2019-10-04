@@ -1,100 +1,117 @@
-pool:
-    vmImage: 'vs2017-win2016'
+trigger:
+  branches:
+    include:
+    - master
+    - develop
 
 variables:
     buildConfiguration: 'Release'
 
-steps:
-# Build gc-cli dotnet core console application
-- script: dotnet build --configuration $(buildConfiguration)
-  workingDirectory: '$(System.DefaultWorkingDirectory)\cli\gc-cli'
-  displayName: 'Build gc-cli'
-  continueOnError: false
+stages:
+- stage: Build
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  # Build gc-cli dotnet core console application
+  - script: dotnet build --configuration $(buildConfiguration)
+    workingDirectory: '$(System.DefaultWorkingDirectory)\cli\gc-cli'
+    displayName: 'Build gc-cli'
+    continueOnError: false
 
-# Build web api dotnet webapi application
-- script: dotnet build --configuration $(buildConfiguration)
-  workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Web.Api'
-  displayName: 'Build Web API'
-  continueOnError: false
+  # Build web api dotnet webapi application
+  - script: dotnet build --configuration $(buildConfiguration)
+    workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Web.Api'
+    displayName: 'Build Web API'
+    continueOnError: false
 
-# Run Unit Tests for web api application
-- script: dotnet test --configuration $(buildConfiguration)
-  workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Unit.Tests'
-  displayName: 'Run Web API Tests'
-  continueOnError: false
+  # Run Unit Tests for web api application
+  - script: dotnet test --configuration $(buildConfiguration)
+    workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Unit.Tests'
+    displayName: 'Run Web API Tests'
+    continueOnError: false
 
-# Run Unit Tests for gc-cli console application
-- script: dotnet test --configuration $(buildConfiguration)
-  workingDirectory: '$(System.DefaultWorkingDirectory)\cli\Blog.Michaeldeongreen.CLI.Core.Unit.Tests'
-  displayName: 'Run gc-cli Tests'
-  continueOnError: false
+  # Run Unit Tests for gc-cli console application
+  - script: dotnet test --configuration $(buildConfiguration)
+    workingDirectory: '$(System.DefaultWorkingDirectory)\cli\Blog.Michaeldeongreen.CLI.Core.Unit.Tests'
+    displayName: 'Run gc-cli Tests'
+    continueOnError: false
 
-# Publish gc-cli as a windows 10 64-bit executable (hard dependency on Windows vm)
-- script: dotnet publish --configuration $(buildConfiguration) -r win10-x64
-  workingDirectory: '$(System.DefaultWorkingDirectory)\cli\gc-cli'
-  displayName: 'Publish gc-cli'
-  continueOnError: false
+  # Publish gc-cli as a windows 10 64-bit executable (hard dependency on Windows vm)
+  - script: dotnet publish --configuration $(buildConfiguration) -r win10-x64
+    workingDirectory: '$(System.DefaultWorkingDirectory)\cli\gc-cli'
+    displayName: 'Publish gc-cli'
+    continueOnError: false
 
-# Command Line Script does the following:
-# Set the directory where the .json config files are located, which are in the web api app data folder
-# Set the directory where the gc-cli output files will be located, which will be in the web client src directory
-# Execute gc-cli.exe and generate static html files, rss & sitemaps xml files
-- script: |
-    SET @configdir=$(System.DefaultWorkingDirectory)\$(cli.argument.configdir)
-    SET @outputdir=$(System.DefaultWorkingDirectory)\$(cli.argument.outputdir)
+  # Command Line Script does the following:
+  # Set the directory where the .json config files are located, which are in the web api app data folder
+  # Set the directory where the gc-cli output files will be located, which will be in the web client src directory
+  # Execute gc-cli.exe and generate static html files, rss & sitemaps xml files
+  - script: |
+      SET @configdir=$(System.DefaultWorkingDirectory)\$(cli.argument.configdir)
+      SET @outputdir=$(System.DefaultWorkingDirectory)\$(cli.argument.outputdir)
 
-    gc-cli.exe -blogurl $(cli.argument.blogurl) -configdir %@configdir% -outputdir %@outputdir%
-  workingDirectory: '$(System.DefaultWorkingDirectory)\cli\gc-cli\bin\Release\netcoreapp2.0\win10-x64\publish'
-  displayName: 'Run gc-cli'
-  continueOnError: false
+      gc-cli.exe -blogurl $(cli.argument.blogurl) -configdir %@configdir% -outputdir %@outputdir%
+    workingDirectory: '$(System.DefaultWorkingDirectory)\cli\gc-cli\bin\Release\netcoreapp2.0\win10-x64\publish'
+    displayName: 'Run gc-cli'
+    continueOnError: false
 
-# Publish web api dotnet webapi application (Note: dist will be inside the main webapi project folder)
-- script: dotnet publish -c $(buildConfiguration) -o dist
-  workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Web.Api'
-  displayName: 'Publish Web API'
-  continueOnError: false
+  # Publish web api dotnet webapi application (Note: dist will be inside the main webapi project folder)
+  - script: dotnet publish -c $(buildConfiguration) -o dist
+    workingDirectory: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Web.Api'
+    displayName: 'Publish Web API'
+    continueOnError: false
 
-# Find the newly created dist folder with web api artifacts and zip them to artifacts staging for release pipeline
-- task: ArchiveFiles@2
-  displayName: 'Zip WebApi Artifacts'
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Web.Api\dist'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)\webapi.zip'  
+  # Find the newly created dist folder with web api artifacts and zip them to artifacts staging for release pipeline
+  - task: ArchiveFiles@2
+    displayName: 'Zip WebApi Artifacts'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)\WebApi\Blog.Michaeldeongreen.Core.Web.Api\dist'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)\webapi.zip'  
 
-# Install all npm package dependencies for the angular web client
-- script: npm ci
-  workingDirectory: '$(System.DefaultWorkingDirectory)\WebClient'
-  displayName: 'Install npm packages dependencies'
+  # Install all npm package dependencies for the angular web client
+  - script: npm ci
+    workingDirectory: '$(System.DefaultWorkingDirectory)\WebClient'
+    displayName: 'Install npm packages dependencies'
 
-# Build the angular web client
-- script: npx ng build --prod
-  workingDirectory: '$(System.DefaultWorkingDirectory)\WebClient'
-  displayName: 'Build WebClient'
+  # Build the angular web client
+  - script: npx ng build --prod
+    workingDirectory: '$(System.DefaultWorkingDirectory)\WebClient'
+    displayName: 'Build WebClient'
 
-# Find the newly created dist folder with web client artifacts zip them to artifacts staging for release pipeline
-- task: ArchiveFiles@2
-  displayName: 'Zip WebClient Artifacts'
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)\WebClient\dist'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)\webclient.zip'
+  # Find the newly created dist folder with web client artifacts zip them to artifacts staging for release pipeline
+  - task: ArchiveFiles@2
+    displayName: 'Zip WebClient Artifacts'
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)\WebClient\dist'
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)\webclient.zip'
 
-# Copy the deploy.ps1 Powershell script into the artifacts directory for the release pipleline
-- task: CopyFiles@2
-  displayName: 'Copy Powershell scripts to Artifacts Directory'
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)'
-    Contents: |
-     **/*.ps1
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  # Copy the deploy.ps1 Powershell script into the artifacts directory for the release pipleline
+  - task: CopyFiles@2
+    displayName: 'Copy Powershell scripts to Artifacts Directory'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)'
+      Contents: |
+       **/*.ps1
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-# Publish build artifacts
-# Should have:
-# webapi.zip
-# webclient.zip
-# deploy.ps1
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Build Artifacts'
+  # Publish build artifacts
+  # Should have:
+  # webapi.zip
+  # webclient.zip
+  # deploy.ps1
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Build Artifacts'
+- stage: Release
+  pool:
+    vmImage: 'ubuntu-latest
+  steps:
+  - task: PowerShell@2
+    displayName: 'Deploy Web API & Web Client'
+    inputs:
+      targetType: filePath
+      filePath: './$(System.DefaultWorkingDirectory)/_Blog.Michaeldeongreen-CI/drop/deploy.ps1'
+      arguments: '-username $(azure.spn.username) -password $(azure.spn.password) -tenant $(azure.tenant.id) -resourcegroup $(azure.webapp.resource.group.name) -webapiname $(azure.webapp.webapi.name) -webclientname $(azure.webapp.webclient.name) -dropdirectory $(drop.directory)'    
