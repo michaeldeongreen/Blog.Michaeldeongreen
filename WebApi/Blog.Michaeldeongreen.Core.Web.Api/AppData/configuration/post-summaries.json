@@ -3566,5 +3566,38 @@
     ],
     "canPreview": false,
     "previewExpirationDate": null
-  }    
+  },
+  {
+    "id": 65,
+    "title": "My First Year at Microsoft",
+    "author": "Michael D. Green",
+    "postDate": "2019-11-29",
+    "snippet": "I joined Microsoft about a year ago and in this blog, I want to take some time to write about some of my experiences.",
+    "link": "my-first-year-at-microsoft",
+    "isActive": false,
+    "categories": [
+      {
+        "id": 1,
+        "name": "Career Advice"
+      }
+    ],
+    "tags": [
+      {
+        "id": 4,
+        "name": "Career"
+      }                  
+    ],
+    "images": [
+      {
+        "name": "microsoft-logo-1200x627.png",
+        "url": "assets/images/microsoft-logo-1200x627.png"
+      },
+      {
+        "name": "my-first-year-at-microsoft.html-001.jpg",
+        "url": "assets/images/my-first-year-at-microsoft.html-001.jpg"
+      }      
+    ],
+    "canPreview": true,
+    "previewExpirationDate": "2019-12-15"
+  }      
 ]  
