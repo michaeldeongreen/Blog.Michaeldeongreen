@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Hosting;
 using Lamar.Microsoft.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.IO;
+using Microsoft.AspNetCore;
 
 namespace Blog.Michaeldeongreen.Core.Web.Api
 {
@@ -9,21 +10,12 @@ namespace Blog.Michaeldeongreen.Core.Web.Api
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((context, builder) => 
-                {
-                    var env = context.HostingEnvironment;
-                    builder
-                    .SetBasePath(env.ContentRootPath)
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-                })
-                .UseLamar()
-                .UseStartup<Startup>()
-                .Build();
+        public static IWebHostBuilder CreateHostBuilder(string[] args) =>
+                WebHost.CreateDefaultBuilder(args)
+                    .UseLamar()
+                    .UseStartup<Startup>();
     }
 }

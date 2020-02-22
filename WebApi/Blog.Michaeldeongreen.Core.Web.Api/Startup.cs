@@ -1,11 +1,11 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Lamar;
 using Blog.Michaeldeongreen.Core.Common;
 using Blog.Michaeldeongreen.Core.Services;
+using Microsoft.Extensions.Hosting;
 
 namespace Blog.Michaeldeongreen.Core.Web.Api
 {
@@ -20,8 +20,8 @@ namespace Blog.Michaeldeongreen.Core.Web.Api
 
         public void ConfigureContainer(ServiceRegistry services)
         {
+            services.AddControllers();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-            services.AddMvc();
             services.AddCors();
             services.AddLogging();
 
@@ -35,17 +35,21 @@ namespace Blog.Michaeldeongreen.Core.Web.Api
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseCors(c => c.AllowAnyOrigin());
             BlogConfig.Configure($"{env.ContentRootPath}//AppData");
 
-            app.UseMvc();
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints => 
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
