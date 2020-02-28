@@ -5,6 +5,7 @@ trigger:
 
 variables:
     buildConfiguration: 'Release'
+    dotnetFolder: 'netcoreapp3.1'
 
 stages:
 - stage: Build
@@ -54,7 +55,7 @@ stages:
         SET @outputdir=$(System.DefaultWorkingDirectory)\$(cli.argument.outputdir)
 
         gc-cli.exe -blogurl $(cli.argument.blogurl) -configdir %@configdir% -outputdir %@outputdir%
-      workingDirectory: '$(System.DefaultWorkingDirectory)\cli\gc-cli\bin\Release\netcoreapp2.0\win10-x64\publish'
+      workingDirectory: '$(System.DefaultWorkingDirectory)\cli\gc-cli\bin\Release\$(dotnetFolder)\win10-x64\publish'
       displayName: 'Run gc-cli'
       continueOnError: false
 
