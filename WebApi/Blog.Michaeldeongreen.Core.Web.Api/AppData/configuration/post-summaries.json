@@ -3599,5 +3599,34 @@
     ],
     "canPreview": true,
     "previewExpirationDate": "2019-12-15"
-  }      
+  },
+  {
+    "id": 70,
+    "title": "Coaching My First OpenHack",
+    "author": "Michael D. Green",
+    "postDate": "2020-03-16",
+    "snippet": "I wanted to take the time to talk about my experiences as a first time coach of an OpenHack and some of the key takeaways after the conclusion of our project.",
+    "link": "coaching-my-first-openhack",
+    "isActive": false,
+    "categories": [
+      {
+        "id": 1,
+        "name": "Career Advice"
+      }
+    ],
+    "tags": [
+      {
+        "id": 4,
+        "name": "Career"
+      }                  
+    ],
+    "images": [
+      {
+        "name": "Production_Fundamentals_Coach.png",
+        "url": "assets/images/Production_Fundamentals_Coach.png"
+      }
+    ],
+    "canPreview": true,
+    "previewExpirationDate": "2020-04-16"
+  }          
 ]  
