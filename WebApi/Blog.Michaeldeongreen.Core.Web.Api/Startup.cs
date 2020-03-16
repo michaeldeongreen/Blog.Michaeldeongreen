@@ -41,11 +41,9 @@ namespace Blog.Michaeldeongreen.Core.Web.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors(c => c.AllowAnyOrigin());
             BlogConfig.Configure($"{env.ContentRootPath}//AppData");
-
+            app.UseCors(c => c.AllowAnyOrigin());
             app.UseRouting();
-
             app.UseEndpoints(endpoints => 
             {
                 endpoints.MapControllers();
